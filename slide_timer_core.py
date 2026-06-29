@@ -2,7 +2,7 @@ from PIL import Image, ImageGrab, ImageChops
 
 
 # ── Hashing ───────────────────────────────────────────────────────────────────
-HASH_SIZE = (64, 64)
+HASH_SIZE = (128, 128)
 
 
 def image_hash(image, size=HASH_SIZE):
@@ -14,7 +14,7 @@ def image_hash(image, size=HASH_SIZE):
 
 
 # ── Comparison ────────────────────────────────────────────────────────────────
-MATCH_THRESHOLD = 10_000
+MATCH_THRESHOLD = 200
 
 
 def images_match(a, b, threshold=MATCH_THRESHOLD):
