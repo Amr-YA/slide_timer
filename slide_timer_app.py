@@ -1,13 +1,17 @@
 import os
 import tkinter as tk
+from tkinter import font
 from slide_timer_core import image_hash, grab_footer, fmt_time
 
 
 # ── HUD ───────────────────────────────────────────────────────────────────────
 HUD_BG = "#333333"
 HUD_FG = "#00FF00"
-HUD_FONT = ("Helvetica", 14, "bold")
-HUD_TEMPLATE = "Slide 99: 99:99\nTotal: 00:00"
+HUD_FONT = ("Consolas", 14, "bold")
+HUD_TEMPLATE = """
+    Slide 99: 99:99
+    \n
+    Total  : 00:00"""
 
 
 class HUD(tk.Toplevel):
@@ -72,7 +76,7 @@ class HUD(tk.Toplevel):
 
     def update_hud(self, slide_num, slide_seconds, total_seconds):
         self._label.config(
-            text=f"Slide {slide_num}: {fmt_time(slide_seconds)}\nTotal: {fmt_time(total_seconds)}"
+            text=f"Slide {slide_num}: {fmt_time(slide_seconds)}\nTotal  : {fmt_time(total_seconds)}"
         )
 
 
