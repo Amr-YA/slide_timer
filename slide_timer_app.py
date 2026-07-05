@@ -6,11 +6,11 @@ from slide_timer_core import image_hash, grab_footer, fmt_time
 HUD_BG = "#333333"
 HUD_FG = "#00FF00"
 HUD_FONT = ("Helvetica", 14, "bold")
-HUD_TEMPLATE = "Slide 99: 99:99"
+HUD_TEMPLATE = "Slide 99: 99:99\nTotal: 00:00"
 
 
 class HUD(tk.Toplevel):
-    """Single-line fixed-width HUD, dark grey background, bright green text."""
+    """Two-line fixed-width HUD, dark grey background, bright green text."""
 
     def __init__(self, master):
         super().__init__(master)
@@ -26,9 +26,10 @@ class HUD(tk.Toplevel):
             fg=HUD_FG,
             bg=HUD_BG,
             anchor="w",
+            justify="left",
             padx=4,
             pady=2,
-            width=len(HUD_TEMPLATE),
+            width=max(len(line) for line in HUD_TEMPLATE.splitlines()),
         )
         self._label.pack()
 
@@ -53,10 +54,12 @@ class HUD(tk.Toplevel):
         self.geometry(f"+{x}+{y}")
 
     def show_countdown(self, n):
-        self._label.config(text=f"Starting in {n}")
+        self._label.config(text=f"Starting in {n}...")
 
-    def update_hud(self, slide_num, total_seconds):
-        self._label.config(text=f"Slide {slide_num}: {fmt_time(total_seconds)}")
+    def update_hud(self, slide_num, slide_seconds, total_seconds):
+        self._label.config(
+            text=f"Slide {slide_num}: {fmt_time(slide_seconds)}\nTotal: {fmt_time(total_seconds)}"
+        )
 
 
 # ── Main app ──────────────────────────────────────────────────────────────────
@@ -180,6 +183,7 @@ class SlideTimerApp:
             self.hud.update_hud(
                 self.hash_order.get(self.current_hash, "—"),
                 self.hash_counts.get(self.current_hash, 0),
+                sum(self.hash_counts.values()),
             )
 
         self.root.after(1000, self.capture_loop)
@@ -195,4 +199,6 @@ class SlideTimerApp:
         lines = [
             f"{self.hash_order.get(h, '?')}  {fmt_time(s)}" for h, s in top_items[:10]
         ]
+        total_seconds = sum(self.hash_counts.values())
+        lines.append(f"Total: {fmt_time(total_seconds)}")
         self.top_var.set("\n".join(lines))
