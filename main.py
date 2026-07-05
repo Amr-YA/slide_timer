@@ -2,9 +2,12 @@ import tkinter as tk
 from slide_timer_app import SlideTimerApp
 import base64
 
-#TODO
-#1.make screenshot not register unless it's on screen for 2 consecutive seconds
-#2.make footer screen selectable
+# BUILD
+# pyinstaller --onefile --windowed --icon=./assets/timer.ico main.py
+
+# TODO make screenshot not register unless it's on screen for 2 consecutive seconds
+# TODO make footer screen selectable
+# TODO Fix Debug mode not saving screenshots after pyinstaller build
 
 DEBUG = False
 

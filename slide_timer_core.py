@@ -1,4 +1,6 @@
 from PIL import Image, ImageGrab, ImageChops
+import sys
+import os
 
 
 # ── Hashing ───────────────────────────────────────────────────────────────────
@@ -38,3 +40,12 @@ def fmt_time(total_seconds):
     """Format seconds as MM:SS."""
     m, s = divmod(total_seconds, 60)
     return f"{m:02d}:{s:02d}"
+
+# ───get current directory───────────────────────────────────────────────────────
+def get_dir():
+    """Always returns the folder where the exe (or script) lives."""
+    if hasattr(sys, '_MEIPASS'):
+        # Running as a PyInstaller bundle
+        return os.path.dirname(sys.executable)
+    # Running as a plain script
+    return os.path.dirname(os.path.abspath(__file__))

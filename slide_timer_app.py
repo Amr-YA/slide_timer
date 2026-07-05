@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 from tkinter import font
-from slide_timer_core import image_hash, grab_footer, fmt_time
+from slide_timer_core import image_hash, grab_footer, fmt_time, get_dir
 
 
 # ── HUD ───────────────────────────────────────────────────────────────────────
@@ -171,7 +171,7 @@ class SlideTimerApp:
         self.root.iconify()
         if self.debug_mode:
             self.debug_folder = os.path.join(
-                os.path.dirname(__file__), "debug_screenshots"
+                get_dir(), "debug_screenshots"
             )
             os.makedirs(self.debug_folder, exist_ok=True)
 
@@ -229,7 +229,7 @@ class SlideTimerApp:
     def _save_debug_screenshot(self, image, slide_number):
         if self.debug_folder is None:
             self.debug_folder = os.path.join(
-                os.path.dirname(__file__), "debug_screenshots"
+                get_dir(), "debug_screenshots"
             )
             os.makedirs(self.debug_folder, exist_ok=True)
 
