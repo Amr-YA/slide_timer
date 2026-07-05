@@ -96,6 +96,7 @@ class SlideTimerApp:
 
         self.status_var = tk.StringVar(value="Press Start to begin.")
         self.top_var = tk.StringVar(value="Captured durations will appear here.")
+        self.countdown_var = tk.IntVar(value=COUNTDOWN_SECS)
 
         self.create_widgets()
 
@@ -104,6 +105,15 @@ class SlideTimerApp:
         frame.pack(fill=tk.BOTH, expand=True)
 
         tk.Label(frame, textvariable=self.status_var, anchor="w").pack(fill=tk.X)
+
+        # Countdown control
+        count_frame = tk.Frame(frame)
+        count_frame.pack(fill=tk.X, pady=(6, 4))
+        tk.Label(count_frame, text="Countdown (s):", anchor="w").pack(side=tk.LEFT)
+        self.countdown_spin = tk.Spinbox(
+            count_frame, from_=0, to=60, width=5, textvariable=self.countdown_var
+        )
+        self.countdown_spin.pack(side=tk.LEFT, padx=(6, 0))
 
         btn_frame = tk.Frame(frame)
         btn_frame.pack(fill=tk.X, pady=(8, 10))
@@ -136,6 +146,11 @@ class SlideTimerApp:
         self.top_var.set("Captured durations will appear here.")
         self.start_button.config(state=tk.DISABLED)
         self.stop_button.config(state=tk.NORMAL)
+        # disable countdown while running
+        try:
+            self.countdown_spin.config(state=tk.DISABLED)
+        except Exception:
+            pass
 
         self.root.iconify()
         if self.debug_mode:
@@ -150,7 +165,11 @@ class SlideTimerApp:
             self.hud.deiconify()
             self.hud.after(50, self.hud._snap_top_right)
 
-        self._countdown_remaining = COUNTDOWN_SECS
+        try:
+            secs = int(self.countdown_var.get())
+        except Exception:
+            secs = COUNTDOWN_SECS
+        self._countdown_remaining = max(0, secs)
         self._tick_countdown()
 
     def _tick_countdown(self):
@@ -169,6 +188,11 @@ class SlideTimerApp:
         self.running = False
         self.start_button.config(state=tk.NORMAL)
         self.stop_button.config(state=tk.DISABLED)
+        # re-enable countdown when stopped
+        try:
+            self.countdown_spin.config(state=tk.NORMAL)
+        except Exception:
+            pass
         self.status_var.set("Capture stopped. Press Start to begin a new session.")
         if self.current_hash is not None:
             self.hash_counts[self.current_hash] = (
