@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from slide_timer_core import image_hash, grab_footer, fmt_time
 
@@ -79,6 +80,8 @@ class SlideTimerApp:
         self.running = False
         self.hud = None
         self._countdown_remaining = 0
+        self.debug_mode = True
+        self.debug_folder = None
 
         self.status_var = tk.StringVar(value="Press Start to begin.")
         self.top_var = tk.StringVar(value="Captured durations will appear here.")
@@ -124,6 +127,12 @@ class SlideTimerApp:
         self.stop_button.config(state=tk.NORMAL)
 
         self.root.iconify()
+        if self.debug_mode:
+            self.debug_folder = os.path.join(
+                os.path.dirname(__file__), "debug_screenshots"
+            )
+            os.makedirs(self.debug_folder, exist_ok=True)
+
         if self.hud is None or not self.hud.winfo_exists():
             self.hud = HUD(self.root)
         else:
@@ -166,13 +175,29 @@ class SlideTimerApp:
             self.hash_order[h] = self.slide_counter
         return self.hash_order[h]
 
+    def _save_debug_screenshot(self, image, slide_number):
+        if self.debug_folder is None:
+            self.debug_folder = os.path.join(
+                os.path.dirname(__file__), "debug_screenshots"
+            )
+            os.makedirs(self.debug_folder, exist_ok=True)
+
+        path = os.path.join(self.debug_folder, f"slide-{slide_number:02d}.jpg")
+        image.convert("RGB").save(path, "JPEG", quality=85)
+
     def capture_loop(self):
         if not self.running:
             return
 
         footer = grab_footer()
         screenshot_hash = image_hash(footer)
+        is_new_slide = screenshot_hash not in self.hash_order
         self.get_slide_number(screenshot_hash)
+
+        if self.debug_mode and is_new_slide:
+            self._save_debug_screenshot(
+                footer, self.hash_order[screenshot_hash]
+            )
 
         self.hash_counts[screenshot_hash] = self.hash_counts.get(screenshot_hash, 0) + 1
         self.current_hash = screenshot_hash
