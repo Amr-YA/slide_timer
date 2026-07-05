@@ -36,6 +36,7 @@ class HUD(tk.Toplevel):
 
         self._label.bind("<ButtonPress-1>", self._drag_start)
         self._label.bind("<B1-Motion>", self._drag_move)
+        self._label.bind("<ButtonRelease-1>", self._on_button_release)
 
         self.after(50, self._snap_top_right)
 
@@ -50,12 +51,24 @@ class HUD(tk.Toplevel):
         self._dy = event.y
 
     def _drag_move(self, event):
+        self._dragged = True
         x = self.winfo_x() + event.x - self._dx
         y = self.winfo_y() + event.y - self._dy
         self.geometry(f"+{x}+{y}")
 
     def show_countdown(self, n):
         self._label.config(text=f"Starting in {n}...")
+
+    def _on_button_release(self, event=None):
+        if getattr(self, "_dragged", False):
+            self._dragged = False
+            return
+        self._restore_main()
+
+    def _restore_main(self, event=None):
+        if self.master is not None:
+            self.master.deiconify()
+            self.lift()
 
     def update_hud(self, slide_num, slide_seconds, total_seconds):
         self._label.config(
