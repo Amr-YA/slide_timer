@@ -2,6 +2,10 @@ import tkinter as tk
 from slide_timer_app import SlideTimerApp
 import base64
 
+#TODO
+#1.make screenshot not register unless it's on screen for 2 consecutive seconds
+#2.make footer screen selectable
+
 DEBUG = False
 
 # Icon PNG to Base64

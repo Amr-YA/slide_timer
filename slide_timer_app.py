@@ -101,6 +101,7 @@ class SlideTimerApp:
         self.status_var = tk.StringVar(value="Press Start to begin.")
         self.top_var = tk.StringVar(value="Captured durations will appear here.")
         self.countdown_var = tk.IntVar(value=COUNTDOWN_SECS)
+        self.debug_var = tk.StringVar(value="")
 
         self.create_widgets()
 
@@ -118,6 +119,12 @@ class SlideTimerApp:
             count_frame, from_=0, to=60, width=5, textvariable=self.countdown_var
         )
         self.countdown_spin.pack(side=tk.LEFT, padx=(6, 0))
+
+        # bind F9 to toggle debug mode when app is not running
+        try:
+            self.root.bind("<F9>", self._on_f9)
+        except Exception:
+            pass
 
         btn_frame = tk.Frame(frame)
         btn_frame.pack(fill=tk.X, pady=(8, 10))
@@ -139,6 +146,11 @@ class SlideTimerApp:
             justify=tk.LEFT,
             wraplength=380,
         ).pack(fill=tk.X)
+
+        # separate debug message line at bottom (does not overwrite status)
+        tk.Label(frame, textvariable=self.debug_var, anchor="w", fg="#FFAA00").pack(
+            fill=tk.X, pady=(6, 0)
+        )
 
     def start_capture(self):
         self.current_hash = None
@@ -266,3 +278,20 @@ class SlideTimerApp:
         total_seconds = sum(self.hash_counts.values())
         lines.append(f"Total: {fmt_time(total_seconds)}")
         self.top_var.set("\n".join(lines))
+
+    def _on_f9(self, event=None):
+        # Only allow toggling debug mode when not running
+        if getattr(self, "running", False):
+            return
+
+        # Toggle debug flag
+        self.debug_mode = not getattr(self, "debug_mode", False)
+        # If debug was turned on, display message on separate debug line; otherwise clear it
+        try:
+            if self.debug_mode:
+                self.debug_var.set("DEBUG: ON")
+            else:
+                self.debug_var.set("")
+        except Exception:
+            pass
+        
