@@ -83,8 +83,6 @@ COUNTDOWN_SECS = 3
 class SlideTimerApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Slide Timer")
-        self.root.geometry("420x260")
 
         self.current_hash = None
         self.hash_counts = {}
